@@ -194,9 +194,15 @@ extension DraggableView {
             
             let target = UIDragPreviewTarget(container: superview, center: view.center)
             
+            let parameters = UIDragPreviewParameters()
+            parameters.visiblePath = UIBezierPath(
+                roundedRect: defaultPreview.view.bounds,
+                cornerRadius: dragPreviewCornerRadius
+            )
+            
             return UITargetedDragPreview(
                 view: defaultPreview.view,
-                parameters: UIDragPreviewParameters(),
+                parameters: parameters,
                 target: target
             )
         }
