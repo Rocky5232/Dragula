@@ -85,6 +85,7 @@ public struct DragulaSectionedView<Header: View,
     @Binding private var items: [Section.Item]
     @State private var draggedItems: [Section.Item] = []
     
+    private let isDraggable: Bool
     private let header: (Section) -> Header
     private let card: (Section.Item) -> Card
     private let dropView: ((Section.Item) -> DropView)?
@@ -101,12 +102,14 @@ public struct DragulaSectionedView<Header: View,
     ///   - dropCompleted: Called when a drop completes.
     public init(
         sections: Binding<[Section]>,
+        isDraggable: Bool = true,
         @ViewBuilder header: @escaping (Section) -> Header,
         @ViewBuilder card: @escaping (Section.Item) -> Card,
         @ViewBuilder dropView: @escaping (Section.Item) -> DropView,
         dropCompleted: @escaping () -> Void
     ) {
         self._sections = sections
+        self.isDraggable = isDraggable
         self._items = .constant([])
         self.header = header
         self.card = card
@@ -116,12 +119,14 @@ public struct DragulaSectionedView<Header: View,
     
     public init(
         items: Binding<[Section.Item]>,
+        isDraggable: Bool = true,
         @ViewBuilder header: @escaping (Section) -> Header,
         @ViewBuilder card: @escaping (Section.Item) -> Card,
         @ViewBuilder dropView: @escaping (Section.Item) -> DropView,
         dropCompleted: @escaping () -> Void
     ) {
         self._sections = .constant([])
+        self.isDraggable = isDraggable
         self._items = items
         self.header = header
         self.card = card
@@ -151,9 +156,9 @@ public struct DragulaSectionedView<Header: View,
                 card(item)
                 #else
                 card(item)
-                    .hidden(item.isDraggable)
+                    .hidden(item.isDraggable && self.isDraggable)
                     .overlay {
-                        if item.isDraggable {
+                        if item.isDraggable && self.isDraggable {
                             DraggableView(
                                 preview: {
                                     card(item)
@@ -206,6 +211,7 @@ public struct DragulaView<Card: View, DropView: View, Item: DragulaItem>: View {
     @State private var draggedItems: [Item] = []
     
     @Binding var items: [Item]
+    private let isDraggable: Bool
     private let card: (Item) -> Card
     private let dropView: ((Item) -> DropView)?
     private let dropCompleted: () -> Void
@@ -220,11 +226,13 @@ public struct DragulaView<Card: View, DropView: View, Item: DragulaItem>: View {
     ///   - dropCompleted: Called when a drop completes.
     public init(
         items: Binding<[Item]>,
+        isDraggable: Bool = true,
         @ViewBuilder card: @escaping (Item) -> Card,
         @ViewBuilder dropView: @escaping (Item) -> DropView,
         dropCompleted: @escaping () -> Void
     ) {
         self._items = items
+        self.isDraggable = isDraggable
         self.card = card
         self.dropView = dropView
         self.dropCompleted = dropCompleted
@@ -236,9 +244,9 @@ public struct DragulaView<Card: View, DropView: View, Item: DragulaItem>: View {
             card(item)
             #else
             card(item)
-                .hidden(item.isDraggable)
+                .hidden(item.isDraggable && self.isDraggable)
                 .overlay {
-                    if item.isDraggable {
+                    if item.isDraggable && self.isDraggable {
                         DraggableView(
                             preview: {
                                 card(item)
